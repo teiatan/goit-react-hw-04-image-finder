@@ -8,7 +8,7 @@ import { AppDiv } from "./App.styled";
 
 export class App extends Component {
   state = {
-    images: [],
+    images: [{src:"", alt:"qwerty", id:1},{src:"", alt:"qwerty", id:2}],
     page: 0,
   }
 
@@ -22,15 +22,17 @@ export class App extends Component {
 
   render() {
     return (
-      <AppDiv>
+      <AppDiv>  
         <Searchbar />
-
-        
-        <Loader />
-        <ImageGallery images={[{src:"", alt:"qwerty", id:1},{src:"", alt:"qwerty", id:2}]}/>
-        <Button onClick={this.loadMore} />
-        <Modal src={"src"} alt={"alt"}/>
-      </AppDiv>
+        {this.state.images!==[] || (
+          <>
+            <Loader />
+            <ImageGallery images={this.state.images}/>
+            <Button onClick={this.loadMore} />
+            <Modal src={"src"} alt={"alt"}/>
+          </>
+        )}
+      </AppDiv> 
     );
   };
 };

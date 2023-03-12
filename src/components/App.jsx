@@ -22,7 +22,7 @@ export class App extends Component {
   handleSearchSubmit = async e => {
     e.preventDefault();
     const images = await this.getImages(1);
-    this.setState({images: images});
+    this.setState({images: images.images});
   };
 
   getImages = async (page) => {
@@ -34,7 +34,7 @@ export class App extends Component {
     const images = response.hits.map(hit => {
       return ({id: hit.id, src: hit.webformatURL, srcLarge:hit.largeImageURL, alt: hit.tags})
     });
-    return images;
+    return {images, totalHits};
     
   };
 

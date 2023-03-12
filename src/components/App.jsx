@@ -2,9 +2,9 @@ import axios from 'axios';
 import { Component } from "react";
 import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
-import { Loader } from "./Loader/Loader";
-import { Button } from "./Button/Button";
-import { Modal } from "./Modal/Modal";
+//import { Loader } from "./Loader/Loader";
+//import { Button } from "./Button/Button";
+//import { Modal } from "./Modal/Modal";
 import { AppDiv } from "./App.styled";
 
 export class App extends Component {
@@ -19,21 +19,23 @@ export class App extends Component {
     this.setState({search: e.currentTarget.value});
   };
 
-  handleSearchSubmit = e => {
+  handleSearchSubmit = async e => {
     e.preventDefault();
-    this.getImages();
+    const images = await this.getImages(1);
+    this.setState({images: images});
   };
 
-  getImages = async e => {
-    
+  getImages = async (page) => {
     const apiKey = "32214751-b09778eb488071213c70b42e8";
-    const url = `https://pixabay.com/api/?q=${this.state.search}=${this.state.page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
+    const url = `https://pixabay.com/api/?q=${this.state.search}=${page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
     const request = await axios.get(url);
     const response = JSON.parse(request.request.response);
+    const totalHits = response.totalHits;
     const images = response.hits.map(hit => {
       return ({id: hit.id, src: hit.webformatURL, srcLarge:hit.largeImageURL, alt: hit.tags})
-    })
-    this.setState({images:images});
+    });
+    return images;
+    
   };
 
   loadMore = () => {

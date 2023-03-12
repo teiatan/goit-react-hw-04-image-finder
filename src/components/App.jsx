@@ -10,7 +10,7 @@ export class App extends Component {
   state = {
     search: "",
     images: [{src:"", alt:"qwerty", id:1},{src:"", alt:"qwerty", id:2}],
-    page: 0,
+    page: 1,
   }
 
 
@@ -19,6 +19,8 @@ export class App extends Component {
   };
 
   getImages = () => {
+    const apiKey = "32214751-b09778eb488071213c70b42e8";
+    const url = `https://pixabay.com/api/?q=${this.state.search}=${this.state.page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
 
   };
 
@@ -27,7 +29,7 @@ export class App extends Component {
   };
 
   componentDidMount() {
-    this.getImages();
+
   };
 
   render() {

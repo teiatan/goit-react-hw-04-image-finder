@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
 import {Header, Form, Input, Label, Button} from './Searchbar.styled';
 
-export function Searchbar({onSubmit}) {
+export function Searchbar({search, onChange, onSubmit}) {
     return (
         <Header>
             <Form onSubmit={() => onSubmit()}>
-                <Button type="submit">
-                🔍
+                <Button type="submit">🔍
                     <Label>Search</Label>
                 </Button>
             
@@ -15,6 +14,8 @@ export function Searchbar({onSubmit}) {
                     autocomplete="off"
                     autoFocus
                     placeholder="Search images and photos"
+                    value={search}
+                    onChange={onChange}
                 />
             </Form>
         </Header>

@@ -4,11 +4,11 @@ import { Ul } from './ImageGallery.styled';
 
 export function ImageGallery ({images}) {
     return (
-        <Ul class="gallery">
+        <Ul>
             {images.map(image =>
                 {
                     return (
-                        <ImageGalleryItem src={image.src} alt={image.alt}/>
+                        <ImageGalleryItem key={image.id} src={image.src} alt={image.alt}/>
                     );
                 })}
             

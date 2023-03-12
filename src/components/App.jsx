@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Component } from "react";
 import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
@@ -9,7 +10,7 @@ import { AppDiv } from "./App.styled";
 export class App extends Component {
   state = {
     search: "",
-    images: [{src:"", alt:"qwerty", id:1},{src:"", alt:"qwerty", id:2}],
+    images: [],
     page: 1,
   }
 
@@ -18,10 +19,18 @@ export class App extends Component {
     this.setState({search: e.currentTarget.value});
   };
 
-  getImages = () => {
+  getImages = async e => {
+    e.preventDefault();
+    console.log('click');
     const apiKey = "32214751-b09778eb488071213c70b42e8";
     const url = `https://pixabay.com/api/?q=${this.state.search}=${this.state.page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
-
+    const request = await axios.get(url);
+    const response = JSON.parse(request.request.response);
+    const images = response.hits.map(hit => {
+      return ({id: hit.id, src: hit.webformatURL, srcLarge:hit.largeImageURL, alt: hit.tags})
+    })
+    console.log(images);
+    this.setState({images:images});
   };
 
   loadMore = () => {
@@ -33,15 +42,16 @@ export class App extends Component {
   };
 
   render() {
+    console.log('rerender');
     return (
       <AppDiv>  
         <Searchbar search={this.state.search} onChange={this.handleSearchInput} onSubmit={this.getImages}/>
-        {this.state.images!==[] || (
+        {this.state.images===[] || (
           <>
-            <Loader />
+            {/* <Loader /> */}
             <ImageGallery images={this.state.images}/>
-            <Button onClick={this.loadMore} />
-            <Modal src={"src"} alt={"alt"}/>
+            {/* <Button onClick={this.loadMore} />
+            <Modal src={"src"} alt={"alt"}/> */}
           </>
         )}
       </AppDiv> 

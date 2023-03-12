@@ -4,7 +4,7 @@ import {Header, Form, Input, Label, Button} from './Searchbar.styled';
 export function Searchbar({search, onChange, onSubmit}) {
     return (
         <Header>
-            <Form onSubmit={() => onSubmit()}>
+            <Form onSubmit={onSubmit}>
                 <Button type="submit">🔍
                     <Label>Search</Label>
                 </Button>

@@ -19,9 +19,13 @@ export class App extends Component {
     this.setState({search: e.currentTarget.value});
   };
 
-  getImages = async e => {
+  handleSearchSubmit = e => {
     e.preventDefault();
-    console.log('click');
+    this.getImages();
+  };
+
+  getImages = async e => {
+    
     const apiKey = "32214751-b09778eb488071213c70b42e8";
     const url = `https://pixabay.com/api/?q=${this.state.search}=${this.state.page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
     const request = await axios.get(url);
@@ -29,7 +33,6 @@ export class App extends Component {
     const images = response.hits.map(hit => {
       return ({id: hit.id, src: hit.webformatURL, srcLarge:hit.largeImageURL, alt: hit.tags})
     })
-    console.log(images);
     this.setState({images:images});
   };
 
@@ -42,10 +45,9 @@ export class App extends Component {
   };
 
   render() {
-    console.log('rerender');
     return (
       <AppDiv>  
-        <Searchbar search={this.state.search} onChange={this.handleSearchInput} onSubmit={this.getImages}/>
+        <Searchbar search={this.state.search} onChange={this.handleSearchInput} onSubmit={this.handleSearchSubmit}/>
         {this.state.images===[] || (
           <>
             {/* <Loader /> */}

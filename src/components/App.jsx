@@ -2,8 +2,8 @@ import axios from 'axios';
 import { Component } from "react";
 import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
-//import { Loader } from "./Loader/Loader";
-//import { Button } from "./Button/Button";
+import { Loader } from "./Loader/Loader";
+import { Button } from "./Button/Button";
 //import { Modal } from "./Modal/Modal";
 import { AppDiv } from "./App.styled";
 
@@ -12,8 +12,8 @@ export class App extends Component {
     search: "",
     images: [],
     page: 1,
-  }
-
+    loading: false,
+  };
 
   handleSearchInput = e => {
     this.setState({search: e.currentTarget.value});
@@ -26,6 +26,7 @@ export class App extends Component {
   };
 
   getImages = async (page) => {
+    this.setState({loading:true});
     const apiKey = "32214751-b09778eb488071213c70b42e8";
     const url = `https://pixabay.com/api/?q=${this.state.search}=${page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
     const request = await axios.get(url);
@@ -34,12 +35,14 @@ export class App extends Component {
     const images = response.hits.map(hit => {
       return ({id: hit.id, src: hit.webformatURL, srcLarge:hit.largeImageURL, alt: hit.tags})
     });
+    this.setState({loading:false});
     return {images, totalHits};
     
   };
 
-  loadMore = () => {
+  loadMore = async () => {
     console.log('Load more is clicked');
+
   };
 
   componentDidMount() {
@@ -50,12 +53,12 @@ export class App extends Component {
     return (
       <AppDiv>  
         <Searchbar search={this.state.search} onChange={this.handleSearchInput} onSubmit={this.handleSearchSubmit}/>
-        {this.state.images===[] || (
+        {this.state.loading === true && <Loader />}
+        {this.state.images !== [] && (
           <>
-            {/* <Loader /> */}
             <ImageGallery images={this.state.images}/>
-            {/* <Button onClick={this.loadMore} />
-            <Modal src={"src"} alt={"alt"}/> */}
+            <Button onClick={this.loadMore} />
+            {/* <Modal src={"src"} alt={"alt"}/> */}
           </>
         )}
       </AppDiv> 

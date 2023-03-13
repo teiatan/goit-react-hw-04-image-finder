@@ -37,7 +37,7 @@ export class App extends Component {
   };
 
   getImages = async () => {
-    this.setState({loader:true});
+    this.setState({loader:true, loadMoreButton:false});
     const apiKey = "32214751-b09778eb488071213c70b42e8";
     const url = `https://pixabay.com/api/?q=${this.state.search}&page=${this.state.page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
     
@@ -63,24 +63,14 @@ export class App extends Component {
     if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
       const response = await this.getImages();
       this.setState({images: [...this.state.images, ...response.images], totalPages: response.totalHits})
-/*       console.log(this.state.page);
-      console.log(this.state.totalPages); */
       this.setState(prevState => {
-
-
         if(prevState.page < prevState.totalPages) {
           return ({loadMoreButton: true,})
         } else {
           return ({loadMoreButton: false,})
         };
-      })
-
-/* 
-      if(this.state.page < this.state.totalPages) {
-        this.setState({loadMoreButton: true,})
-      } else {
-        this.setState({loadMoreButton: false,})
-      }; */
+      });
+      
     };
   };
 

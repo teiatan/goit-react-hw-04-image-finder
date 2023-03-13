@@ -63,8 +63,8 @@ export class App extends Component {
   };
 
   modalOpen = e => {
-    if(e.target === 'IMG') {
-      console.log('');
+    if(e.target.nodeName === 'IMG') {
+      this.setState({showModal: true, modalImgSrc: e.target.getAttribute("data-modal")})
     }
   }
 

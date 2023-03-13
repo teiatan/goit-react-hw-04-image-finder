@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import { Li, Img } from './ImageGalleryItem.styled';
 
-export function ImageGalleryItem ({src, alt}) {
+export function ImageGalleryItem ({src, alt, srcLarge}) {
     return (
         <Li>
-            <Img src={src} alt={alt} />
+            <Img src={src} alt={alt} data-modal={srcLarge}/>
         </Li>
     );
 };

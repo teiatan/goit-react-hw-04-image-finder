@@ -28,7 +28,11 @@ export class App extends Component {
       alert('Search request shouldn`t be empty');
       return;
     }
-    this.setState({page:1, images:[], foundSearch:this.state.search});
+    this.setState(() => {
+        if(this.state.search !== this.state.foundSearch) {
+          return ({page:1, images:[], foundSearch:this.state.search});
+        };
+      });
     window.scrollTo(0,0);
   };
 

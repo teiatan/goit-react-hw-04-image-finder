@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { Component } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Loader } from "./Loader/Loader";
@@ -17,8 +19,7 @@ export class App extends Component {
     loader: false,
     loadMoreButton: false,
     showModal: false,
-    modalImgSrc: "https://pixabay.com/get/g803966287f8aae001fe72a363b20b56d487cb3d3025c5bab81a9a655bc4642288d0ff4e4181c944eb3e4dcaec80ff96d4887bd1b0f161ff231e92792d33f2e15_1280.jpg",
-    modalImgAlt: "",
+    modalImgSrc: "",
   };
 
   handleSearchInput = e => {
@@ -75,14 +76,25 @@ export class App extends Component {
   async componentDidUpdate(_, prevState) {
     if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
       const response = await this.getImages();
-      this.setState({images: [...this.state.images, ...response.images], totalPages: response.totalHits})
+      
+      this.setState({images: [...this.state.images, ...response.images], totalPages: Math.ceil(response.totalHits / 12)})
+      
       this.setState(prevState => {
         if(prevState.page < prevState.totalPages) {
           return ({loadMoreButton: true,})
         } else {
+          //toast.info(`You've reached the end of search`);
           return ({loadMoreButton: false,})
         };
       });
+      
+      if(response.images.length === 0) {
+        toast.error('These are no images with such request');
+      } else {
+        if(this.state.page === 1) {
+          toast.success(`We found ${response.totalHits} images`);
+        };
+      };
       
     };
   };
@@ -96,6 +108,7 @@ export class App extends Component {
         {this.state.loader === true && <Loader />}
         {this.state.loadMoreButton === true && <Button onClick={this.loadMore} />}
         {this.state.showModal === true && <Modal modalClose={this.modalClose} children={<img src={this.state.modalImgSrc} alt={this.state.modalImgAlt}/>}/>}
+        <ToastContainer autoClose={3000} />
       </AppDiv> 
     );
   };

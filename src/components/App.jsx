@@ -4,7 +4,7 @@ import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Loader } from "./Loader/Loader";
 import { Button } from "./Button/Button";
-//import { Modal } from "./Modal/Modal";
+import { Modal } from "./Modal/Modal";
 import { AppDiv } from "./App.styled";
 
 export class App extends Component {
@@ -16,6 +16,9 @@ export class App extends Component {
     totalPages: 1,
     loader: false,
     loadMoreButton: false,
+    showModal: false,
+    modalImgSrc: "https://pixabay.com/get/g803966287f8aae001fe72a363b20b56d487cb3d3025c5bab81a9a655bc4642288d0ff4e4181c944eb3e4dcaec80ff96d4887bd1b0f161ff231e92792d33f2e15_1280.jpg",
+    modalImgAlt: "",
   };
 
   handleSearchInput = e => {
@@ -59,6 +62,12 @@ export class App extends Component {
       });
   };
 
+  modalOpen = e => {
+    if(e.target === 'IMG') {
+      console.log('');
+    }
+  }
+
   async componentDidUpdate(_, prevState) {
     if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
       const response = await this.getImages();
@@ -78,11 +87,11 @@ export class App extends Component {
     return (
       <AppDiv>  
         <Searchbar search={this.state.search} onChange={this.handleSearchInput} onSubmit={this.handleSearchSubmit}/>
-        {this.state.images !== [] && (<ImageGallery images={this.state.images}/>
+        {this.state.images !== [] && (<ImageGallery images={this.state.images} modalOpen={this.modalOpen}/>
         )}
         {this.state.loader === true && <Loader />}
         {this.state.loadMoreButton === true && <Button onClick={this.loadMore} />}
-        {/* <Modal src={"src"} alt={"alt"}/> */}
+        {this.state.showModal === true && <Modal children={<img src={this.state.modalImgSrc} alt={this.state.modalImgAlt}/>}/>}
       </AppDiv> 
     );
   };

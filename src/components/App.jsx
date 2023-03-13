@@ -13,7 +13,7 @@ export class App extends Component {
     foundSearch: "",
     images: [],
     page: 1,
-    totalPages: 0,
+    totalPages: 1,
     loader: false,
     loadMoreButton: false,
   };
@@ -22,17 +22,13 @@ export class App extends Component {
     this.setState({search: e.currentTarget.value.toLowerCase()});
   };
 
-  handleSearchSubmit = async e => {
+  handleSearchSubmit = e => {
     e.preventDefault();
-
     if (this.state.search.trim() === '') {
       alert('Search request shouldn`t be empty');
       return;
     }
-    this.setState({page:1, images: [], foundSearch:this.state.search});
-
-    //const images = await this.getImages(1);
-    //this.setState({images: images.images, totalHits: images.totalHits, page:1});
+    this.setState({page:1, images:[], foundSearch:this.state.search});
   };
 
   getImages = async () => {
@@ -51,28 +47,35 @@ export class App extends Component {
     
   };
 
-  loadMore = async () => {
-    if(this.state.page < this.state.totalPages) {    
+  loadMore = () => {    
       this.setState(prevState => {
-        return ({page:prevState.page+1})
+        if(this.state.page < this.state.totalPages) {
+        return ({page:prevState.page+1})};
       });
-    };
-  };
-
-  componentDidMount() {
-
   };
 
   async componentDidUpdate(_, prevState) {
     if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
       const response = await this.getImages();
-      this.setState({images: [...prevState.images, ...response.images], totalPages: response.totalHits})
+      this.setState({images: [...this.state.images, ...response.images], totalPages: response.totalHits})
+/*       console.log(this.state.page);
+      console.log(this.state.totalPages); */
+      this.setState(prevState => {
 
-      if(this.state.page === this.totalHits) {
-        this.setState({loadMoreButton: false,})
-      } else {
+
+        if(prevState.page < prevState.totalPages) {
+          return ({loadMoreButton: true,})
+        } else {
+          return ({loadMoreButton: false,})
+        };
+      })
+
+/* 
+      if(this.state.page < this.state.totalPages) {
         this.setState({loadMoreButton: true,})
-      };
+      } else {
+        this.setState({loadMoreButton: false,})
+      }; */
     };
   };
 
@@ -80,9 +83,9 @@ export class App extends Component {
     return (
       <AppDiv>  
         <Searchbar search={this.state.search} onChange={this.handleSearchInput} onSubmit={this.handleSearchSubmit}/>
-        {this.state.loader === true && <Loader />}
         {this.state.images !== [] && (<ImageGallery images={this.state.images}/>
         )}
+        {this.state.loader === true && <Loader />}
         {this.state.loadMoreButton === true && <Button onClick={this.loadMore} />}
         {/* <Modal src={"src"} alt={"alt"}/> */}
       </AppDiv> 

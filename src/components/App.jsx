@@ -10,6 +10,7 @@ import { AppDiv } from "./App.styled";
 export class App extends Component {
   state = {
     search: "",
+    foundSearch: "",
     images: [],
     page: 1,
     loader: false,
@@ -27,24 +28,24 @@ export class App extends Component {
       alert('Search request shouldn`t be empty');
       return;
     }
-    this.setState({page:1, loader: true, images: [], loadMoreButton: false});
+    this.setState({page:1, images: [], loadMoreButton: false, foundSearch:this.state.search});
 
     //const images = await this.getImages(1);
     //this.setState({images: images.images, totalHits: images.totalHits, page:1});
   };
 
-  getImages = async (page) => {
+  getImages = async () => {
     this.setState({loader:true});
     const apiKey = "32214751-b09778eb488071213c70b42e8";
-    const url = `https://pixabay.com/api/?q=${this.state.search}&page=${page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
-    const request = await axios.get(url).finally(() => this.setState({loader:false}));
+    const url = `https://pixabay.com/api/?q=${this.state.search}&page=${this.state.page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
+    
+    const request = await axios.get(url);
     const response = JSON.parse(request.request.response);
     const totalHits = response.totalHits;
     const images = response.hits.map(hit => {
       return ({id: hit.id, src: hit.webformatURL, srcLarge:hit.largeImageURL, alt: hit.tags})
     });
-    
-    console.log('11111');
+    this.setState({loader:false})
     return {images, totalHits};
     
   };
@@ -52,15 +53,11 @@ export class App extends Component {
   loadMore = async () => {
     if(this.state.page < this.state.totalHits) {
       const page = this.state.page + 1;
-      const apiResponce = await this.getImages(page);
       
-      this.setState(async prevState => {
-        //const page = prevState.page + 1;
-        //const apiResponce = await this.getImages(page);
-        console.log([...prevState.images, ...apiResponce.images]);
-        return ({images: [...prevState.images, ...apiResponce.images], page: page})
+      
+      this.setState(prevState => {
+        
       })
-      console.log('333333');
     };
   };
 
@@ -68,8 +65,12 @@ export class App extends Component {
 
   };
 
-  componentDidUpdate() {
+  async componentDidUpdate(_, prevState) {
+    if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
+      const newRequest = await this.getImages();
+      this.setState({images: [...prevState.images, ...newRequest.images]})
 
+    }
   };
 
   render() {
@@ -77,15 +78,10 @@ export class App extends Component {
       <AppDiv>  
         <Searchbar search={this.state.search} onChange={this.handleSearchInput} onSubmit={this.handleSearchSubmit}/>
         {this.state.loader === true && <Loader />}
-        {this.state.images !== [] && (
-          <>
-            <ImageGallery images={this.state.images}/>
-            
-            {/* <Modal src={"src"} alt={"alt"}/> */}
-          </>
+        {this.state.images !== [] && (<ImageGallery images={this.state.images}/>
         )}
         {this.state.loadMoreButton === true && <Button onClick={this.loadMore} />}
-
+        {/* <Modal src={"src"} alt={"alt"}/> */}
       </AppDiv> 
     );
   };

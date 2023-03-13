@@ -29,6 +29,7 @@ export class App extends Component {
       return;
     }
     this.setState({page:1, images:[], foundSearch:this.state.search});
+    window.scrollTo(0,0);
   };
 
   getImages = async () => {

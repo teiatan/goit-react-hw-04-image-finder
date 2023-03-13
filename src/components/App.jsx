@@ -66,7 +66,11 @@ export class App extends Component {
     if(e.target.nodeName === 'IMG') {
       this.setState({showModal: true, modalImgSrc: e.target.getAttribute("data-modal")})
     }
-  }
+  };
+
+  modalClose = () => {
+    this.setState({showModal: false, modalImgSrc: ""});
+  };
 
   async componentDidUpdate(_, prevState) {
     if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
@@ -91,7 +95,7 @@ export class App extends Component {
         )}
         {this.state.loader === true && <Loader />}
         {this.state.loadMoreButton === true && <Button onClick={this.loadMore} />}
-        {this.state.showModal === true && <Modal children={<img src={this.state.modalImgSrc} alt={this.state.modalImgAlt}/>}/>}
+        {this.state.showModal === true && <Modal modalClose={this.modalClose} children={<img src={this.state.modalImgSrc} alt={this.state.modalImgAlt}/>}/>}
       </AppDiv> 
     );
   };

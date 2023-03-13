@@ -13,6 +13,7 @@ export class App extends Component {
     foundSearch: "",
     images: [],
     page: 1,
+    totalPages: 0,
     loader: false,
     loadMoreButton: false,
   };
@@ -28,7 +29,7 @@ export class App extends Component {
       alert('Search request shouldn`t be empty');
       return;
     }
-    this.setState({page:1, images: [], loadMoreButton: false, foundSearch:this.state.search});
+    this.setState({page:1, images: [], foundSearch:this.state.search});
 
     //const images = await this.getImages(1);
     //this.setState({images: images.images, totalHits: images.totalHits, page:1});
@@ -51,13 +52,10 @@ export class App extends Component {
   };
 
   loadMore = async () => {
-    if(this.state.page < this.state.totalHits) {
-      const page = this.state.page + 1;
-      
-      
+    if(this.state.page < this.state.totalPages) {    
       this.setState(prevState => {
-        
-      })
+        return ({page:prevState.page+1})
+      });
     };
   };
 
@@ -67,10 +65,15 @@ export class App extends Component {
 
   async componentDidUpdate(_, prevState) {
     if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
-      const newRequest = await this.getImages();
-      this.setState({images: [...prevState.images, ...newRequest.images]})
+      const response = await this.getImages();
+      this.setState({images: [...prevState.images, ...response.images], totalPages: response.totalHits})
 
-    }
+      if(this.state.page === this.totalHits) {
+        this.setState({loadMoreButton: false,})
+      } else {
+        this.setState({loadMoreButton: true,})
+      };
+    };
   };
 
   render() {

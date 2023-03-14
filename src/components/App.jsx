@@ -80,9 +80,7 @@ export class App extends Component {
       return {images, totalHits};
     } catch(error) {
       toast.error(error.message);
-    }
-    
-    
+    };
   };
 
   loadMore = () => {    
@@ -101,11 +99,8 @@ export class App extends Component {
     this.setState({showModal: false, modalImgSrc: ""});
   };
 
-  
-
   render() {
-const {searchInputValue, images, loader, loadMoreButton, showModal, modalImgSrc, modalImgAlt} = this.state;
-
+    const {searchInputValue, images, loader, loadMoreButton, showModal, modalImgSrc, modalImgAlt} = this.state;
     return (
       <AppDiv>  
         <Searchbar search={searchInputValue} onChange={this.handleSearchInput} onSubmit={this.handleSearchSubmit}/>

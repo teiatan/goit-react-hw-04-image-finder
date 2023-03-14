@@ -24,7 +24,9 @@ export class App extends Component {
 
   async componentDidUpdate(_, prevState) {
     if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
-       this.setState({loader: true})
+      
+      this.setState({loader: true})
+      
       try {
         const response = await getImages(this.state.searchInputValue, this.state.page);
 

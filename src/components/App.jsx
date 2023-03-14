@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Component } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -7,6 +6,7 @@ import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Loader } from "./Loader/Loader";
 import { Button } from "./Button/Button";
 import { Modal } from "./Modal/Modal";
+import { getImages } from "apiService/apiService";
 import { AppDiv } from "./App.styled";
 
 export class App extends Component {
@@ -24,27 +24,29 @@ export class App extends Component {
 
   async componentDidUpdate(_, prevState) {
     if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
-      
+       this.setState({loader: true})
       try {
-        const response = await this.getImages();
-        this.setState({images: [...this.state.images, ...response.images], totalPages: Math.ceil(response.totalHits / 12), loader: false})
+        const response = await getImages(this.state.searchInputValue, this.state.page);
 
-        this.setState(prev => {
-          if(prev.page < prev.totalPages) {
-            return ({loadMoreButton: true,})
-          } else {
-            return ({loadMoreButton: false,})
-          };
-        });
-      
-      if(response.images.length === 0) {
-        toast.error(`These are no "${this.state.foundSearch}" images`);
-      } else if(this.state.page === 1) {
+        if(response.images.length === 0) {
+          toast.error(`These are no "${this.state.foundSearch}" images`);
+        return;
+        };
+        
+        
+        if(this.state.page === 1) {
           toast.success(`We found ${response.totalHits} images`);
-      };
+        };
+        
+        this.setState(prevState => ({
+          images: [...prevState.images, ...response.images], 
+          loadMoreButton: this.state.page < Math.ceil(response.totalHits / 12), 
+        }));
+     
       } catch (error) {
         toast.error(error.message);
-      }; 
+        
+      }finally{this.setState({loader: false})}; 
     };
   };
 
@@ -61,25 +63,7 @@ export class App extends Component {
       return;
     };
     if(searchInputValue !== foundSearch) {
-      this.setState({page:1, images:[], foundSearch:searchInputValue});
-    };
-  };
-
-  getImages = async () => {
-    this.setState({loader:true, loadMoreButton:false});
-
-    const apiKey = "32214751-b09778eb488071213c70b42e8";
-    const url = `https://pixabay.com/api/?q=${this.state.searchInputValue}&page=${this.state.page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
-    try {
-      const request = await axios.get(url);
-      const response = JSON.parse(request.request.response);
-      const totalHits = response.totalHits;
-      const images = response.hits.map(hit => {
-        return ({id: hit.id, src: hit.webformatURL, srcLarge:hit.largeImageURL, alt: hit.tags})
-      });
-      return {images, totalHits};
-    } catch(error) {
-      toast.error(error.message);
+      this.setState({page:1, images:[], foundSearch:searchInputValue, loadMoreButton: false,});
     };
   };
 
@@ -107,8 +91,8 @@ export class App extends Component {
         {images !== [] && (<ImageGallery images={images} modalOpen={this.modalOpen}/>
         )}
         {loader === true && <Loader />}
-        {loadMoreButton === true && <Button onClick={this.loadMore} />}
-        {showModal === true && <Modal modalClose={this.modalClose} children={<img src={modalImgSrc} alt={modalImgAlt}/>}/>}
+        {loadMoreButton && <Button onClick={this.loadMore} />}
+        {showModal  && <Modal modalClose={this.modalClose} children={<img src={modalImgSrc} alt={modalImgAlt}/>}/>}
         <ToastContainer autoClose={2500} />
       </AppDiv> 
     );

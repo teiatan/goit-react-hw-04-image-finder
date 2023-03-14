@@ -24,27 +24,25 @@ export class App extends Component {
 
   async componentDidUpdate(_, prevState) {
     if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
-      
+       this.setState({loader: true})
       try {
-        const response = await this.getImages();
-        this.setState({images: [...this.state.images, ...response.images], totalPages: Math.ceil(response.totalHits / 12), loader: false})
-
-        this.setState(prev => {
-          if(prev.page < prev.totalPages) {
-            return ({loadMoreButton: true,})
-          } else {
-            return ({loadMoreButton: false,})
-          };
-        });
-      
-      if(response.images.length === 0) {
+         if(response.images.length === 0) {
         toast.error(`These are no "${this.state.foundSearch}" images`);
-      } else if(this.state.page === 1) {
+           return 
+      }  
+        
+        
+        if(this.state.page === 1) {
           toast.success(`We found ${response.totalHits} images`);
       };
+        const response = await this.getImages();
+        this.setState(prevState => ({images: [...prevState.images, ...response.images], 
+                       loadMoreButton: this.state.page < Math.ceil(response.totalHits / 12), }))
+     
       } catch (error) {
         toast.error(error.message);
-      }; 
+        
+      }finaly{ this.setState({loader: false})}; 
     };
   };
 
@@ -61,12 +59,12 @@ export class App extends Component {
       return;
     };
     if(searchInputValue !== foundSearch) {
-      this.setState({page:1, images:[], foundSearch:searchInputValue});
+      this.setState({page:1, images:[], foundSearch:searchInputValue. loadMoreButton: false,});
     };
   };
 
   getImages = async () => {
-    this.setState({loader:true, loadMoreButton:false});
+    
 
     const apiKey = "32214751-b09778eb488071213c70b42e8";
     const url = `https://pixabay.com/api/?q=${this.state.searchInputValue}&page=${this.state.page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
@@ -107,8 +105,8 @@ export class App extends Component {
         {images !== [] && (<ImageGallery images={images} modalOpen={this.modalOpen}/>
         )}
         {loader === true && <Loader />}
-        {loadMoreButton === true && <Button onClick={this.loadMore} />}
-        {showModal === true && <Modal modalClose={this.modalClose} children={<img src={modalImgSrc} alt={modalImgAlt}/>}/>}
+        {loadMoreButton && <Button onClick={this.loadMore} />}
+        {showModal  && <Modal modalClose={this.modalClose} children={<img src={modalImgSrc} alt={modalImgAlt}/>}/>}
         <ToastContainer autoClose={2500} />
       </AppDiv> 
     );

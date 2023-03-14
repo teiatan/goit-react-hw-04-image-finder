@@ -12,4 +12,5 @@ export function ImageGalleryItem ({src, alt, srcLarge}) {
 ImageGalleryItem.propTypes = {
     src: PropTypes.string,
     alt: PropTypes.string,
+    srcLarge: PropTypes.string,
 };

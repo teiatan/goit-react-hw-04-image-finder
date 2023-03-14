@@ -18,8 +18,8 @@ export class Modal extends Component {
 
     handleKeyDown = e => {
         if (e.code === 'Escape') {
-          this.props.modalClose();
-        }
+            this.props.modalClose();
+        };
     };
 
     handleBackdropClick = e => {
@@ -36,5 +36,5 @@ export class Modal extends Component {
                 </DivModal>
             </DivOverlay>
         );
-    }
+    };
 };

@@ -11,7 +11,7 @@ import { AppDiv } from "./App.styled";
 
 export class App extends Component {
   state = {
-    search: "",
+    searchInputValue: "",
     foundSearch: "",
     images: [],
     page: 1,
@@ -23,18 +23,19 @@ export class App extends Component {
   };
 
   handleSearchInput = e => {
-    this.setState({search: e.currentTarget.value.toLowerCase()});
+    this.setState({searchInputValue: e.currentTarget.value.toLowerCase()});
   };
 
   handleSearchSubmit = e => {
+    const {searchInputValue, foundSearch} = this.state;
     e.preventDefault();
-    if (this.state.search.trim() === '') {
-      alert('Search request shouldn`t be empty');
+    if (searchInputValue.trim() === '') {
+      toast.error(`Search request shouldn't be empty`);
       return;
-    }
+    };
     this.setState(() => {
-        if(this.state.search !== this.state.foundSearch) {
-          return ({page:1, images:[], foundSearch:this.state.search});
+        if(searchInputValue !== foundSearch) {
+          return ({page:1, images:[], foundSearch:searchInputValue});
         };
       });
     window.scrollTo(0,0);
@@ -43,7 +44,7 @@ export class App extends Component {
   getImages = async () => {
     this.setState({loader:true, loadMoreButton:false});
     const apiKey = "32214751-b09778eb488071213c70b42e8";
-    const url = `https://pixabay.com/api/?q=${this.state.search}&page=${this.state.page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
+    const url = `https://pixabay.com/api/?q=${this.state.searchInputValue}&page=${this.state.page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
     
     const request = await axios.get(url);
     const response = JSON.parse(request.request.response);
@@ -89,7 +90,7 @@ export class App extends Component {
       });
       
       if(response.images.length === 0) {
-        toast.error('These are no images with such request');
+        toast.error(`These are no "${this.state.foundSearch}" images`);
       } else {
         if(this.state.page === 1) {
           toast.success(`We found ${response.totalHits} images`);
@@ -102,7 +103,7 @@ export class App extends Component {
   render() {
     return (
       <AppDiv>  
-        <Searchbar search={this.state.search} onChange={this.handleSearchInput} onSubmit={this.handleSearchSubmit}/>
+        <Searchbar search={this.state.searchInputValue} onChange={this.handleSearchInput} onSubmit={this.handleSearchSubmit}/>
         {this.state.images !== [] && (<ImageGallery images={this.state.images} modalOpen={this.modalOpen}/>
         )}
         {this.state.loader === true && <Loader />}

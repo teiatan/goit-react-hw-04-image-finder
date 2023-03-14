@@ -27,13 +27,12 @@ export class App extends Component {
       
       try {
         const response = await this.getImages();
-        this.setState({images: [...this.state.images, ...response.images], totalPages: Math.ceil(response.totalHits / 12)})
+        this.setState({images: [...this.state.images, ...response.images], totalPages: Math.ceil(response.totalHits / 12), loader: false})
 
         this.setState(prev => {
           if(prev.page < prev.totalPages) {
             return ({loadMoreButton: true,})
           } else {
-            //toast.info(`You've reached the end of search`);
             return ({loadMoreButton: false,})
           };
         });
@@ -78,7 +77,6 @@ export class App extends Component {
       const images = response.hits.map(hit => {
         return ({id: hit.id, src: hit.webformatURL, srcLarge:hit.largeImageURL, alt: hit.tags})
       });
-      this.setState({loader:false})
       return {images, totalHits};
     } catch(error) {
       toast.error(error.message);
@@ -89,9 +87,7 @@ export class App extends Component {
 
   loadMore = () => {    
     this.setState(prevState => {
-      if(this.state.page < this.state.totalPages) {
-        return ({page:prevState.page+1})
-      };
+      return ({page:prevState.page+1});
     });
   };
 

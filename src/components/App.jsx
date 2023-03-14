@@ -43,6 +43,7 @@ export class App extends Component {
 
   getImages = async () => {
     this.setState({loader:true, loadMoreButton:false});
+
     const apiKey = "32214751-b09778eb488071213c70b42e8";
     const url = `https://pixabay.com/api/?q=${this.state.searchInputValue}&page=${this.state.page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
     
@@ -58,16 +59,17 @@ export class App extends Component {
   };
 
   loadMore = () => {    
-      this.setState(prevState => {
-        if(this.state.page < this.state.totalPages) {
-        return ({page:prevState.page+1})};
-      });
+    this.setState(prevState => {
+      if(this.state.page < this.state.totalPages) {
+        return ({page:prevState.page+1})
+      };
+    });
   };
 
   modalOpen = e => {
     if(e.target.nodeName === 'IMG') {
       this.setState({showModal: true, modalImgSrc: e.target.getAttribute("data-modal")})
-    }
+    };
   };
 
   modalClose = () => {
@@ -101,15 +103,17 @@ export class App extends Component {
   };
 
   render() {
+const {searchInputValue, images, loader, loadMoreButton, showModal, modalImgSrc, modalImgAlt} = this.state;
+
     return (
       <AppDiv>  
-        <Searchbar search={this.state.searchInputValue} onChange={this.handleSearchInput} onSubmit={this.handleSearchSubmit}/>
-        {this.state.images !== [] && (<ImageGallery images={this.state.images} modalOpen={this.modalOpen}/>
+        <Searchbar search={searchInputValue} onChange={this.handleSearchInput} onSubmit={this.handleSearchSubmit}/>
+        {images !== [] && (<ImageGallery images={images} modalOpen={this.modalOpen}/>
         )}
-        {this.state.loader === true && <Loader />}
-        {this.state.loadMoreButton === true && <Button onClick={this.loadMore} />}
-        {this.state.showModal === true && <Modal modalClose={this.modalClose} children={<img src={this.state.modalImgSrc} alt={this.state.modalImgAlt}/>}/>}
-        <ToastContainer autoClose={3000} />
+        {loader === true && <Loader />}
+        {loadMoreButton === true && <Button onClick={this.loadMore} />}
+        {showModal === true && <Modal modalClose={this.modalClose} children={<img src={modalImgSrc} alt={modalImgAlt}/>}/>}
+        <ToastContainer autoClose={2500} />
       </AppDiv> 
     );
   };

@@ -10,12 +10,17 @@ export function ImageGallery ({images, modalOpen}) {
                     return (
                         <ImageGalleryItem key={image.id} src={image.src} alt={image.alt} srcLarge={image.srcLarge}/>
                     );
-                })}
-            
+                })}   
         </Ul>
     );
 };
 
 ImageGallery.propTypes = {
-    images: PropTypes.array,
+    images: PropTypes.arrayOf(PropTypes.shape({
+        src: PropTypes.string,
+        alt: PropTypes.string,
+        id: PropTypes.number,
+        srcLarge: PropTypes.string,
+    })),
+    modalOpen: PropTypes.func,
 };

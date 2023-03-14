@@ -22,6 +22,32 @@ export class App extends Component {
     modalImgSrc: "",
   };
 
+  async componentDidUpdate(_, prevState) {
+    if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
+      const response = await this.getImages();
+      
+      this.setState({images: [...this.state.images, ...response.images], totalPages: Math.ceil(response.totalHits / 12)})
+      
+      this.setState(prevState => {
+        if(prevState.page < prevState.totalPages) {
+          return ({loadMoreButton: true,})
+        } else {
+          //toast.info(`You've reached the end of search`);
+          return ({loadMoreButton: false,})
+        };
+      });
+      
+      if(response.images.length === 0) {
+        toast.error(`These are no "${this.state.foundSearch}" images`);
+      } else {
+        if(this.state.page === 1) {
+          toast.success(`We found ${response.totalHits} images`);
+        };
+      };
+      
+    };
+  };
+
   handleSearchInput = e => {
     this.setState({searchInputValue: e.currentTarget.value.toLowerCase()});
   };
@@ -76,31 +102,7 @@ export class App extends Component {
     this.setState({showModal: false, modalImgSrc: ""});
   };
 
-  async componentDidUpdate(_, prevState) {
-    if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
-      const response = await this.getImages();
-      
-      this.setState({images: [...this.state.images, ...response.images], totalPages: Math.ceil(response.totalHits / 12)})
-      
-      this.setState(prevState => {
-        if(prevState.page < prevState.totalPages) {
-          return ({loadMoreButton: true,})
-        } else {
-          //toast.info(`You've reached the end of search`);
-          return ({loadMoreButton: false,})
-        };
-      });
-      
-      if(response.images.length === 0) {
-        toast.error(`These are no "${this.state.foundSearch}" images`);
-      } else {
-        if(this.state.page === 1) {
-          toast.success(`We found ${response.totalHits} images`);
-        };
-      };
-      
-    };
-  };
+  
 
   render() {
 const {searchInputValue, images, loader, loadMoreButton, showModal, modalImgSrc, modalImgAlt} = this.state;

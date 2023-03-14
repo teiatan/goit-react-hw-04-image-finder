@@ -28,30 +28,24 @@ export class App extends Component {
       try {
         const response = await this.getImages();
         this.setState({images: [...this.state.images, ...response.images], totalPages: Math.ceil(response.totalHits / 12)})
-      
-      this.setState(prevState => {
-        if(prevState.page < prevState.totalPages) {
-          return ({loadMoreButton: true,})
-        } else {
-          //toast.info(`You've reached the end of search`);
-          return ({loadMoreButton: false,})
-        };
-      });
+
+        this.setState(prev => {
+          if(prev.page < prev.totalPages) {
+            return ({loadMoreButton: true,})
+          } else {
+            //toast.info(`You've reached the end of search`);
+            return ({loadMoreButton: false,})
+          };
+        });
       
       if(response.images.length === 0) {
         toast.error(`These are no "${this.state.foundSearch}" images`);
-      } else {
-        if(this.state.page === 1) {
+      } else if(this.state.page === 1) {
           toast.success(`We found ${response.totalHits} images`);
-        };
       };
       } catch (error) {
         toast.error(error.message);
-      };
-      
-      
-      
-      
+      }; 
     };
   };
 

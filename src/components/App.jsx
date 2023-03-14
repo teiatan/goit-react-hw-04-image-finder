@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Component } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -7,6 +6,7 @@ import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Loader } from "./Loader/Loader";
 import { Button } from "./Button/Button";
 import { Modal } from "./Modal/Modal";
+import { getImages } from "apiService/apiService";
 import { AppDiv } from "./App.styled";
 
 export class App extends Component {
@@ -26,23 +26,27 @@ export class App extends Component {
     if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
        this.setState({loader: true})
       try {
-         if(response.images.length === 0) {
-        toast.error(`These are no "${this.state.foundSearch}" images`);
-           return 
-      }  
+        const response = await getImages(this.state.searchInputValue, this.state.page);
+
+        if(response.images.length === 0) {
+          toast.error(`These are no "${this.state.foundSearch}" images`);
+        return;
+        };
         
         
         if(this.state.page === 1) {
           toast.success(`We found ${response.totalHits} images`);
-      };
-        const response = await this.getImages();
-        this.setState(prevState => ({images: [...prevState.images, ...response.images], 
-                       loadMoreButton: this.state.page < Math.ceil(response.totalHits / 12), }))
+        };
+        
+        this.setState(prevState => ({
+          images: [...prevState.images, ...response.images], 
+          loadMoreButton: this.state.page < Math.ceil(response.totalHits / 12), 
+        }));
      
       } catch (error) {
         toast.error(error.message);
         
-      }finaly{ this.setState({loader: false})}; 
+      }finally{this.setState({loader: false})}; 
     };
   };
 
@@ -59,25 +63,7 @@ export class App extends Component {
       return;
     };
     if(searchInputValue !== foundSearch) {
-      this.setState({page:1, images:[], foundSearch:searchInputValue. loadMoreButton: false,});
-    };
-  };
-
-  getImages = async () => {
-    
-
-    const apiKey = "32214751-b09778eb488071213c70b42e8";
-    const url = `https://pixabay.com/api/?q=${this.state.searchInputValue}&page=${this.state.page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
-    try {
-      const request = await axios.get(url);
-      const response = JSON.parse(request.request.response);
-      const totalHits = response.totalHits;
-      const images = response.hits.map(hit => {
-        return ({id: hit.id, src: hit.webformatURL, srcLarge:hit.largeImageURL, alt: hit.tags})
-      });
-      return {images, totalHits};
-    } catch(error) {
-      toast.error(error.message);
+      this.setState({page:1, images:[], foundSearch:searchInputValue, loadMoreButton: false,});
     };
   };
 

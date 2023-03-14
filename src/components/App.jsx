@@ -55,16 +55,14 @@ export class App extends Component {
   handleSearchSubmit = e => {
     const {searchInputValue, foundSearch} = this.state;
     e.preventDefault();
+    window.scrollTo(0,0);
     if (searchInputValue.trim() === '') {
       toast.error(`Search request shouldn't be empty`);
       return;
     };
-    this.setState(() => {
-        if(searchInputValue !== foundSearch) {
-          return ({page:1, images:[], foundSearch:searchInputValue});
-        };
-      });
-    window.scrollTo(0,0);
+    if(searchInputValue !== foundSearch) {
+      this.setState({page:1, images:[], foundSearch:searchInputValue});
+    };
   };
 
   getImages = async () => {

@@ -24,9 +24,10 @@ export class App extends Component {
 
   async componentDidUpdate(_, prevState) {
     if(prevState.foundSearch !== this.state.foundSearch || prevState.page !== this.state.page) {
-      const response = await this.getImages();
       
-      this.setState({images: [...this.state.images, ...response.images], totalPages: Math.ceil(response.totalHits / 12)})
+      try {
+        const response = await this.getImages();
+        this.setState({images: [...this.state.images, ...response.images], totalPages: Math.ceil(response.totalHits / 12)})
       
       this.setState(prevState => {
         if(prevState.page < prevState.totalPages) {
@@ -44,6 +45,12 @@ export class App extends Component {
           toast.success(`We found ${response.totalHits} images`);
         };
       };
+      } catch (error) {
+        toast.error(error.message);
+      };
+      
+      
+      
       
     };
   };
@@ -70,15 +77,19 @@ export class App extends Component {
 
     const apiKey = "32214751-b09778eb488071213c70b42e8";
     const url = `https://pixabay.com/api/?q=${this.state.searchInputValue}&page=${this.state.page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
+    try {
+      const request = await axios.get(url);
+      const response = JSON.parse(request.request.response);
+      const totalHits = response.totalHits;
+      const images = response.hits.map(hit => {
+        return ({id: hit.id, src: hit.webformatURL, srcLarge:hit.largeImageURL, alt: hit.tags})
+      });
+      this.setState({loader:false})
+      return {images, totalHits};
+    } catch(error) {
+      toast.error(error.message);
+    }
     
-    const request = await axios.get(url);
-    const response = JSON.parse(request.request.response);
-    const totalHits = response.totalHits;
-    const images = response.hits.map(hit => {
-      return ({id: hit.id, src: hit.webformatURL, srcLarge:hit.largeImageURL, alt: hit.tags})
-    });
-    this.setState({loader:false})
-    return {images, totalHits};
     
   };
 

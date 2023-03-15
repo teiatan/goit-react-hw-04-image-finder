@@ -90,7 +90,7 @@ export class App extends Component {
     return (
       <AppDiv>  
         <Searchbar search={searchInputValue} onChange={this.handleSearchInput} onSubmit={this.handleSearchSubmit}/>
-        {images !== [] && (<ImageGallery images={images} modalOpen={this.modalOpen}/>
+        {images.length !== 0 && (<ImageGallery images={images} modalOpen={this.modalOpen}/>
         )}
         {loader === true && <Loader />}
         {loadMoreButton && <Button onClick={this.loadMore} />}

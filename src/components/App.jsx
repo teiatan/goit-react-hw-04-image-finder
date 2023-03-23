@@ -20,7 +20,6 @@ export function App() {
   const isFirstRender = useRef(true);
   
   useEffect(()=>{
-    console.log(isFirstRender);
     if(isFirstRender.current) {
       isFirstRender.current = false;
       return;

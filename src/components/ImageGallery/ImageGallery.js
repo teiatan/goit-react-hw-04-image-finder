@@ -7,7 +7,7 @@ export function ImageGallery ({images, modalOpen}) {
     const onModalOpen = e => {
         if(e.target.nodeName === 'IMG') {
             modalOpen(e.target.getAttribute("data-modal"), e.target.alt);
-          };
+        };
     };
 
     return (
@@ -17,7 +17,8 @@ export function ImageGallery ({images, modalOpen}) {
                     return (
                         <ImageGalleryItem key={image.id} src={image.src} alt={image.alt} srcLarge={image.srcLarge}/>
                     );
-                })}   
+                }
+            )}   
         </Ul>
     );
 };

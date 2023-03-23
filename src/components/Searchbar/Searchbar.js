@@ -36,7 +36,5 @@ export function Searchbar({handleSearchSubmit}) {
 };
 
 Searchbar.propTypes = {
-    search: PropTypes.string, 
-    onChange: PropTypes.func,
-    onSubmit: PropTypes.func,
+    handleSearchSubmit: PropTypes.func,
 };

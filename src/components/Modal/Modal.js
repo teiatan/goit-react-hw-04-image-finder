@@ -5,17 +5,18 @@ import { DivOverlay, DivModal } from './Modal.styled';
 export function Modal({children, modalClose}) {
 
     useEffect(()=>{
+
+        const closeModalByEscape = e => {
+            if (e.code === 'Escape') {
+                modalClose();
+            };
+        };
+
             window.addEventListener('keydown', closeModalByEscape);
         return () => {
             window.removeEventListener('keydown', closeModalByEscape);
         };
-    });
-
-    const closeModalByEscape = e => {
-        if (e.code === 'Escape') {
-            modalClose();
-        };
-    };
+    }, [modalClose]);
 
     const closeModalByBackdropClick = e => {
         if(e.target.id === "backdrop") {

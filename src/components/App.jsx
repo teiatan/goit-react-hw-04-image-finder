@@ -11,7 +11,6 @@ import { AppDiv } from "./App.styled";
 
 export function App() {
 
-  const [searchInputValue, setSearchInputValue] = useState("");
   const [foundSearch, setFoundSearch] = useState("");
   const [images, setImages] = useState([]);
   const [page, setPage] = useState(1);
@@ -19,6 +18,7 @@ export function App() {
   const [loadMoreButton, setLoadMoreButton] = useState(false);
   const [showModal, setShowmodal] = useState(false);
   const [modalImgSrc, setModalImgSrc] = useState("");
+  const [modalData, setModalData] = useState({src:"", alt:""});
   const isFirstRender = useRef(true);
   
   useEffect(()=>{
@@ -57,17 +57,16 @@ export function App() {
     };    
   },[foundSearch, page]);
 
-  const handleSearchSubmit = e => {
-    e.preventDefault();
+  const handleSearchSubmit = (inputValue) => {
     window.scrollTo(0,0);
-    if (searchInputValue.trim() === '') {
+    if (inputValue.trim() === '') {
       toast.error(`Search request shouldn't be empty`);
       return;
     };
-    if(searchInputValue !== foundSearch) {
+    if(inputValue !== foundSearch) {
       setPage(1);
       setImages([]);
-      setFoundSearch(searchInputValue);
+      setFoundSearch(inputValue);
       setLoadMoreButton(false);
     };
   };
@@ -76,11 +75,16 @@ export function App() {
     setPage(prevState => prevState+1)
   };
 
-  const modalOpen = e => {
+  const modalOpenn = e => {
     if(e.target.nodeName === 'IMG') {
       setShowmodal(true);
       setModalImgSrc(e.target.getAttribute("data-modal"));
     };
+  };
+
+  const modalOpen = (src, alt) => {
+    setShowmodal(true);
+    setModalData({src:src, alt:alt});
   };
 
   const modalClose = () => {
@@ -90,12 +94,12 @@ export function App() {
 
   return (
     <AppDiv>  
-      <Searchbar search={searchInputValue} onChange={handleSearchInput} onSubmit={handleSearchSubmit}/>
+      <Searchbar handleSearchSubmit={handleSearchSubmit}/>
       {images.length !== 0 && (<ImageGallery images={images} modalOpen={modalOpen}/>
       )}
       {loader === true && <Loader />}
       {loadMoreButton && <Button onClick={loadMore} />}
-      {showModal  && <Modal modalClose={modalClose} children={<img src={modalImgSrc} alt={"modalImgAlt"}/>}/>}
+      {showModal  && <Modal modalClose={modalClose} children={<img src={modalData.src} alt={modalData.alt}/>}/>}
       <ToastContainer autoClose={2500} />
     </AppDiv> 
   );

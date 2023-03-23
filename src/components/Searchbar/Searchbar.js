@@ -2,17 +2,22 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import {Header, Form, Input, Label, Button} from './Searchbar.styled';
 
-export function Searchbar({onSubmit}) {
+export function Searchbar({handleSearchSubmit}) {
 
     const [input, setInput] = useState("");
 
     const onChange = e => {
         setInput(e.currentTarget.value.toLowerCase());
-    };    
+    };
+    
+    const onSubmit = e => {
+        e.preventDefault(); 
+        handleSearchSubmit(input);
+    }
       
     return (
         <Header>
-            <Form onSubmit={()=>onSubmit(input)}>
+            <Form onSubmit={onSubmit}>
                 <Button type="submit">🔍
                     <Label>Search</Label>
                 </Button>

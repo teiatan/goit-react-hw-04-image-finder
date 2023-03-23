@@ -57,10 +57,6 @@ export function App() {
     };    
   },[foundSearch, page]);
 
-  const handleSearchInput = e => {
-    setSearchInputValue(e.currentTarget.value.toLowerCase());
-  };
-
   const handleSearchSubmit = e => {
     e.preventDefault();
     window.scrollTo(0,0);

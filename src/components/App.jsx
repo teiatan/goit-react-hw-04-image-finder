@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState} from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Searchbar } from "./Searchbar/Searchbar";
@@ -17,41 +17,37 @@ export function App() {
   const [loader, setLoader] = useState(false);
   const [loadMoreButton, setLoadMoreButton] = useState(false);
   const [modalData, setModalData] = useState(null);
-  const isFirstRender = useRef(true);
   
   useEffect(()=>{
-    if(isFirstRender.current) {
-      isFirstRender.current = false;
+
+    if (foundSearch.trim() === '') {
       return;
     };
-
-    if (foundSearch.trim() !== '') {
-      getImages(foundSearch, page).then(
-        response => {
-          setImages(prevState => [...prevState, ...response.images]);
-          setLoadMoreButton(page < Math.ceil(response.totalHits / 12));
-          
-          if(response.images.length === 0) {
-            toast.error(`These are no "${foundSearch}" images`);
-            return;
-          };
-          
-          if(page === 1) {
-            toast.success(`We found ${response.totalHits} images`);
-          };
-        }
-      ).catch(
-        error => { 
-          toast.error(error.message);
-          console.log(error); 
-        }
-      ).finally(
-        () => {
-          setLoader(false);
-        }
-      );
-      
-    };    
+    
+    getImages(foundSearch, page).then(
+      response => {
+        setImages(prevState => [...prevState, ...response.images]);
+        setLoadMoreButton(page < Math.ceil(response.totalHits / 12));
+        
+        if(response.images.length === 0) {
+          toast.error(`These are no "${foundSearch}" images`);
+          return;
+        };
+        
+        if(page === 1) {
+          toast.success(`We found ${response.totalHits} images`);
+        };
+      }
+    ).catch(
+      error => { 
+        toast.error(error.message);
+        console.log(error); 
+      }
+    ).finally(
+      () => {
+        setLoader(false);
+      }
+    );
   },[foundSearch, page]);
 
   const handleSearchSubmit = (inputValue) => {
@@ -73,7 +69,7 @@ export function App() {
   };
 
   const modalOpen = (src, alt) => {
-    setModalData({src:src, alt:alt});
+    setModalData({src, alt});
   };
 
   const modalClose = () => {

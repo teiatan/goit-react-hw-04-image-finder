@@ -19,7 +19,6 @@ export function App() {
   const [modalData, setModalData] = useState(null);
   
   useEffect(()=>{
-
     if (foundSearch.trim() === '') {
       return;
     };
